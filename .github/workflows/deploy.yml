@@ -5,7 +5,7 @@ on:
   push:
     branches:
       - main
-      - 'feature/**' # Trigger on pushes to feature branches
+      - 'feature/**'
 
 jobs:
   build_test_and_deploy:
@@ -18,9 +18,11 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: 'npm' # Use npm's caching mechanism
 
-      - name: Install Dependencies
-        run: npm install
+      - name: Install Dependencies # <-- MODIFIED STEP
+        # 'npm ci' is a cleaner, more reliable install for CI/CD
+        run: npm ci
 
       - name: Build Project
         run: npm run build
@@ -29,10 +31,10 @@ jobs:
         run: npm test
 
       - name: Deploy to Firebase
-        if: success() # Only run if tests succeed
+        if: success()
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_MY_WEALTH_APP_9D53E }}' # Use your project ID
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_MY_WEALTH_APP_9D53E }}'
           channelId: live
-          projectId: my-wealth-app-9d53e # Use your project ID
+          projectId: my-wealth-app-9d53e
