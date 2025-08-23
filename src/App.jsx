@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
-
-// --- NEW, CORRECTED IMPORT STATEMENTS ---
 import LogInIconURL from './assets/login-icon.svg';
 import UserPlusIconURL from './assets/user-plus-icon.svg';
 import LogOutIconURL from './assets/logout-icon.svg';
 import CheckCircleIconURL from './assets/check-circle-icon.svg';
 import XCircleIconURL from './assets/x-circle-icon.svg';
 
-// --- YOUR FIREBASE CONFIGURATION (Unchanged) ---
+// --- YOUR FIREBASE CONFIGURATION ---
 const firebaseConfig = {
   apiKey: "AIzaSyBrWRtbL6dQ3jZstcG8TQJFBGSi5d4TWWk",
   authDomain: "my-wealth-app-9d53e.firebaseapp.com",
@@ -20,7 +18,6 @@ const firebaseConfig = {
 
 const myAppId = firebaseConfig.projectId; 
 
-// --- MessageBox COMPONENT (Corrected) ---
 const MessageBox = ({ message, type }) => {
     if (!message) return null;
     const bgColor = type === 'success' ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200';
@@ -253,9 +250,7 @@ const App = () => {
                                 <div className="space-y-3">
                                     {dummyUsers.map((user) => (
                                         <div key={user.id} className="p-3 bg-white rounded-md border shadow-sm">
-                                            <p className="text-gray-700 text-sm">
-                                                <span className="font-semibold">Email:</span> <span className="font-mono text-blue-600">{user.email}</span>
-                                            </p>
+                                            <p className="text-gray-700 text-sm"><span className="font-semibold">Email:</span> <span className="font-mono text-blue-600">{user.email}</span></p>
                                         </div>
                                     ))}
                                 </div>
