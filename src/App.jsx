@@ -308,7 +308,7 @@ const App = () => {
                                 onClick={handleLogin}
                                 className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-semibold hover:bg-blue-700 transition duration-200 flex items-center justify-center space-x-2 shadow-md hover:shadow-lg"
                             >
-                                <LogInIcon size={18} />
+                                <LogInIcon className="w-5 h-5"/>
                                 <span>Log In</span>
                             </button>
                         </div>
@@ -362,7 +362,7 @@ const App = () => {
                                 onClick={handleRegister}
                                 className="w-full bg-green-600 text-white py-2.5 rounded-lg font-semibold hover:bg-green-700 transition duration-200 flex items-center justify-center space-x-2 shadow-md hover:shadow-lg"
                             >
-                                <UserPlusIcon size={18} />
+                                <UserPlusIcon className="w-5 h-5"/>
                                 <span>Register</span>
                             </button>
                         </div>
@@ -389,7 +389,7 @@ const App = () => {
                                     onClick={handleLogout}
                                     className="mt-4 bg-red-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-red-700 transition duration-200 flex items-center justify-center mx-auto space-x-2 shadow-md hover:shadow-lg"
                                 >
-                                    <LogOutIcon size={18} />
+                                    <LogOutIcon className="w-5 h-5" />
                                     <span>Log Out</span>
                                 </button>
                             </div>
@@ -409,7 +409,7 @@ const App = () => {
                                 onClick={createDummyUser}
                                 className="bg-blue-600 text-white py-2.5 px-6 rounded-lg font-semibold hover:bg-blue-700 transition duration-200 flex items-center justify-center space-x-2 shadow-md hover:shadow-lg"
                             >
-                                <UserPlusIcon size={18} />
+                                <UserPlusIcon className="w-5 h-5" />
                                 <span>Create Dummy User</span>
                             </button>
                         </div>
