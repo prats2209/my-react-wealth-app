@@ -26,12 +26,14 @@ const MessageBox = ({ message, type }) => {
     if (!message) return null;
     const bgColor = type === 'success' ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200';
     const textColor = type === 'success' ? 'text-green-700' : 'text-red-700';
-    // Use the imported SVG components
-    const Icon = type === 'success' ? CheckCircleIcon : XCircleIcon;
+    
+    // Use the imported icon URLs
+    const iconSrc = type === 'success' ? CheckCircleIconURL : XCircleIconURL;
 
     return (
         <div id="messageBox" className={`mt-4 p-3 rounded-lg border flex items-center space-x-2 ${bgColor} ${textColor}`}>
-            <Icon className="w-5 h-5" /> {/* Use className to style SVGs */}
+            {/* Use a standard img tag */}
+            <img src={iconSrc} alt="Status icon" className="w-5 h-5" /> 
             <p className="text-sm font-medium">{message}</p>
         </div>
     );
