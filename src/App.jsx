@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import LogInIcon from './assets/login-icon.svg?react';
-import UserPlusIcon from './assets/user-plus-icon.svg?react';
-import LogOutIcon from './assets/logout-icon.svg?react';
-import CheckCircleIcon from './assets/check-circle-icon.svg?react';
-import XCircleIcon from './assets/x-circle-icon.svg?react';
 
-// --- YOUR FIREBASE CONFIGURATION ---
+// --- NEW, CORRECTED IMPORT STATEMENTS ---
+import LogInIconURL from './assets/login-icon.svg';
+import UserPlusIconURL from './assets/user-plus-icon.svg';
+import LogOutIconURL from './assets/logout-icon.svg';
+import CheckCircleIconURL from './assets/check-circle-icon.svg';
+import XCircleIconURL from './assets/x-circle-icon.svg';
+
+// --- YOUR FIREBASE CONFIGURATION (Unchanged) ---
 const firebaseConfig = {
   apiKey: "AIzaSyBrWRtbL6dQ3jZstcG8TQJFBGSi5d4TWWk",
   authDomain: "my-wealth-app-9d53e.firebaseapp.com",
@@ -18,16 +20,16 @@ const firebaseConfig = {
 
 const myAppId = firebaseConfig.projectId; 
 
-// Helper component for displaying messages
+// --- MessageBox COMPONENT (Corrected) ---
 const MessageBox = ({ message, type }) => {
     if (!message) return null;
     const bgColor = type === 'success' ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200';
     const textColor = type === 'success' ? 'text-green-700' : 'text-red-700';
-    const Icon = type === 'success' ? CheckCircleIcon : XCircleIcon;
+    const iconSrc = type === 'success' ? CheckCircleIconURL : XCircleIconURL;
 
     return (
         <div id="messageBox" className={`mt-4 p-3 rounded-lg border flex items-center space-x-2 ${bgColor} ${textColor}`}>
-            <Icon className="w-5 h-5" />
+            <img src={iconSrc} alt="Status icon" className="w-5 h-5" />
             <p className="text-sm font-medium">{message}</p>
         </div>
     );
@@ -48,28 +50,23 @@ const App = () => {
     const [userId, setUserId] = useState(null); 
 
     useEffect(() => {
-        const loadFirebaseScripts = () => {
-            return new Promise((resolve, reject) => {
-                if (window.firebase) { resolve(); return; }
-                const scripts = [
-                    'https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js',
-                    'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js',
-                    'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js'
-                ];
-                let loadedCount = 0;
-                scripts.forEach(src => {
-                    const script = document.createElement('script');
-                    script.src = src;
-                    script.async = true;
-                    script.onload = () => {
-                        loadedCount++;
-                        if (loadedCount === scripts.length) resolve();
-                    };
-                    script.onerror = () => reject(new Error(`Failed to load script: ${src}`));
-                    document.head.appendChild(script);
-                });
+        const loadFirebaseScripts = () => new Promise((resolve, reject) => {
+            if (window.firebase) { resolve(); return; }
+            const scripts = [
+                'https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js',
+                'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js',
+                'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js'
+            ];
+            let loaded = 0;
+            scripts.forEach(src => {
+                const script = document.createElement('script');
+                script.src = src;
+                script.async = true;
+                script.onload = () => { if (++loaded === scripts.length) resolve(); };
+                script.onerror = () => reject(new Error(`Failed to load: ${src}`));
+                document.head.appendChild(script);
             });
-        };
+        });
 
         const initializeFirebaseApp = async () => {
             try {
@@ -80,7 +77,7 @@ const App = () => {
                 const dbInstance = window.firebase.firestore();
                 setAuth(authInstance);
                 setDb(dbInstance);
-                const unsubscribe = authInstance.onAuthStateChanged((user) => {
+                const unsubscribe = authInstance.onAuthStateChanged(user => {
                     setCurrentUser(user);
                     setUserId(user?.uid || crypto.randomUUID());
                     setAuthReady(true);
@@ -93,8 +90,8 @@ const App = () => {
                 });
                 return () => unsubscribe(); 
             } catch (error) {
-                console.error("Firebase initialization error:", error);
-                showTemporaryMessage(`Failed to initialize app: ${error.message}`, 'error');
+                console.error("Firebase init error:", error);
+                showTemporaryMessage(`Failed to init app: ${error.message}`, 'error');
             }
         };
         initializeFirebaseApp();
@@ -122,9 +119,8 @@ const App = () => {
         if (password.length < 6) return showTemporaryMessage('Password must be at least 6 characters');
         try {
             const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-            const user = userCredential.user;
-            await db.collection(`artifacts/${myAppId}/users/${user.uid}/user_profiles`).doc(user.uid).set({
-                email: user.email, createdAt: new Date(),
+            await db.collection(`artifacts/${myAppId}/users/${userCredential.user.uid}/user_profiles`).doc(userCredential.user.uid).set({
+                email: userCredential.user.email, createdAt: new Date(),
             });
             showTemporaryMessage('Registration successful! You are now logged in.', 'success');
             setEmail(''); setPassword('');
@@ -148,9 +144,8 @@ const App = () => {
         const dummyPassword = 'Password123!'; 
         try {
             const dummyUserCredential = await auth.createUserWithEmailAndPassword(dummyEmail, dummyPassword);
-            const dummyAuthUser = dummyUserCredential.user;
             await db.collection(`artifacts/${myAppId}/public/data/dummy_users`).add({
-                uid: dummyAuthUser.uid, email: dummyEmail, password: dummyPassword,
+                uid: dummyUserCredential.user.uid, email: dummyEmail, password: dummyPassword,
                 createdAt: new Date(), createdBy: currentUser?.uid || 'anonymous' 
             });
             showTemporaryMessage(`Dummy user '${dummyEmail}' created!`, 'success');
@@ -164,41 +159,36 @@ const App = () => {
         if (!dbInstance) return; 
         try {
             const querySnapshot = await dbInstance.collection(`artifacts/${myAppId}/public/data/dummy_users`).get();
-            const usersList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            setDummyUsers(usersList);
+            setDummyUsers(querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
         } catch (error) {
             showTemporaryMessage(`Failed to fetch dummy users: ${error.message}`);
         }
     };
 
     const renderContent = () => {
-        if (!authReady || !firebaseLoaded) {
-            return (
-                <div className="text-center p-8">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                    <p className="text-lg text-blue-600 font-medium">Initializing application...</p>
-                </div>
-            );
-        }
+        if (!authReady || !firebaseLoaded) return (
+            <div className="text-center p-8">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                <p className="text-lg text-blue-600 font-medium">Initializing application...</p>
+            </div>
+        );
 
         switch (activeView) {
             case 'login':
                 return (
                     <div className="bg-white rounded-xl shadow-lg p-6 sm:p-8 w-full max-w-md border">
-                        <div className="text-center mb-6">
-                            <h2 className="text-2xl font-bold text-gray-800">Client Login</h2>
-                        </div>
+                        <div className="text-center mb-6"><h2 className="text-2xl font-bold text-gray-800">Client Login</h2></div>
                         <div className="space-y-4">
                             <div>
                                 <label htmlFor="loginEmail" className="block text-gray-700 text-sm font-medium mb-1">Email</label>
-                                <input type="email" id="loginEmail" className="w-full px-4 py-2.5 border rounded-lg" placeholder="your@email.com" value={email} onChange={(e) => setEmail(e.target.value)} />
+                                <input type="email" id="loginEmail" className="w-full px-4 py-2.5 border rounded-lg" value={email} onChange={(e) => setEmail(e.target.value)} />
                             </div>
                             <div>
                                 <label htmlFor="loginPassword" className="block text-gray-700 text-sm font-medium mb-1">Password</label>
-                                <input type="password" id="loginPassword" className="w-full px-4 py-2.5 border rounded-lg" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} />
+                                <input type="password" id="loginPassword" className="w-full px-4 py-2.5 border rounded-lg" value={password} onChange={(e) => setPassword(e.target.value)} />
                             </div>
-                            <button onClick={handleLogin} className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-semibold hover:bg-blue-700 flex items-center justify-center space-x-2">
-                                <LogInIcon className="w-5 h-5" />
+                            <button onClick={handleLogin} className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-semibold flex items-center justify-center space-x-2">
+                                <img src={LogInIconURL} alt="Login" className="w-5 h-5" />
                                 <span>Log In</span>
                             </button>
                         </div>
@@ -211,22 +201,20 @@ const App = () => {
                     </div>
                 );
             case 'register':
-                return (
+                 return (
                     <div className="bg-white rounded-xl shadow-lg p-6 sm:p-8 w-full max-w-md border">
-                        <div className="text-center mb-6">
-                            <h2 className="text-2xl font-bold text-gray-800">Register New Account</h2>
-                        </div>
+                        <div className="text-center mb-6"><h2 className="text-2xl font-bold text-gray-800">Register New Account</h2></div>
                         <div className="space-y-4">
-                            <div>
+                             <div>
                                 <label htmlFor="registerEmail" className="block text-gray-700 text-sm font-medium mb-1">Email</label>
-                                <input type="email" id="registerEmail" className="w-full px-4 py-2.5 border rounded-lg" placeholder="your@email.com" value={email} onChange={(e) => setEmail(e.target.value)} />
+                                <input type="email" id="registerEmail" className="w-full px-4 py-2.5 border rounded-lg" value={email} onChange={(e) => setEmail(e.target.value)} />
                             </div>
                             <div>
                                 <label htmlFor="registerPassword" className="block text-gray-700 text-sm font-medium mb-1">Password</label>
-                                <input type="password" id="registerPassword" className="w-full px-4 py-2.5 border rounded-lg" placeholder="Minimum 6 characters" value={password} onChange={(e) => setPassword(e.target.value)} />
+                                <input type="password" id="registerPassword" className="w-full px-4 py-2.5 border rounded-lg" value={password} onChange={(e) => setPassword(e.target.value)} />
                             </div>
-                            <button onClick={handleRegister} className="w-full bg-green-600 text-white py-2.5 rounded-lg font-semibold hover:bg-green-700 flex items-center justify-center space-x-2">
-                                <UserPlusIcon className="w-5 h-5" />
+                            <button onClick={handleRegister} className="w-full bg-green-600 text-white py-2.5 rounded-lg font-semibold flex items-center justify-center space-x-2">
+                                <img src={UserPlusIconURL} alt="Register" className="w-5 h-5" />
                                 <span>Register</span>
                             </button>
                         </div>
@@ -245,17 +233,17 @@ const App = () => {
                         {currentUser && (
                             <div className="text-center text-gray-700 mb-6">
                                 <p className="text-lg">Welcome, <span className="font-semibold text-blue-600">{currentUser.email}</span>!</p>
-                                <button onClick={handleLogout} className="mt-4 bg-red-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-red-700 flex items-center justify-center mx-auto space-x-2">
-                                    <LogOutIcon className="w-5 h-5" />
+                                <button onClick={handleLogout} className="mt-4 bg-red-600 text-white py-2 px-4 rounded-lg font-semibold flex items-center justify-center mx-auto space-x-2">
+                                    <img src={LogOutIconURL} alt="Logout" className="w-5 h-5" />
                                     <span>Log Out</span>
                                 </button>
                             </div>
                         )}
                         <hr className="my-6" />
-                        <h3 className="text-xl font-semibold text-gray-800 mb-3 text-center">Dummy User Creator (for testing)</h3>
+                        <h3 className="text-xl font-semibold text-gray-800 mb-3 text-center">Dummy User Creator</h3>
                         <div className="flex justify-center mb-6">
-                            <button onClick={createDummyUser} className="bg-blue-600 text-white py-2.5 px-6 rounded-lg font-semibold hover:bg-blue-700 flex items-center justify-center space-x-2">
-                                <UserPlusIcon className="w-5 h-5" />
+                            <button onClick={createDummyUser} className="bg-blue-600 text-white py-2.5 px-6 rounded-lg font-semibold flex items-center justify-center space-x-2">
+                                <img src={UserPlusIconURL} alt="Create User" className="w-5 h-5" />
                                 <span>Create Dummy User</span>
                             </button>
                         </div>
@@ -263,9 +251,11 @@ const App = () => {
                         {dummyUsers.length > 0 ? (
                             <div className="bg-gray-50 p-4 rounded-lg border max-h-64 overflow-y-auto">
                                 <div className="space-y-3">
-                                    {dummyUsers.map((user, index) => (
+                                    {dummyUsers.map((user) => (
                                         <div key={user.id} className="p-3 bg-white rounded-md border shadow-sm">
-                                            <p className="text-gray-700 text-sm"><span className="font-semibold">Email:</span> <span className="font-mono text-blue-600">{user.email}</span></p>
+                                            <p className="text-gray-700 text-sm">
+                                                <span className="font-semibold">Email:</span> <span className="font-mono text-blue-600">{user.email}</span>
+                                            </p>
                                         </div>
                                     ))}
                                 </div>
