@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { ReactComponent as LogInIcon } from './assets/login-icon.svg';
-import { ReactComponent as UserPlusIcon } from './assets/user-plus-icon.svg';
-import { ReactComponent as LogOutIcon } from './assets/logout-icon.svg';
-import { ReactComponent as CheckCircleIcon } from './assets/check-circle-icon.svg';
-import { ReactComponent as XCircleIcon } from './assets/x-circle-icon.svg';
+import LogInIconURL from './assets/login-icon.svg';
+import UserPlusIconURL from './assets/user-plus-icon.svg';
+import LogOutIconURL from './assets/logout-icon.svg';
+import CheckCircleIconURL from './assets/check-circle-icon.svg';
+import XCircleIconURL from './assets/x-circle-icon.svg';
 
 // --- YOUR FIREBASE CONFIGURATION GOES HERE ---
 // You MUST replace these placeholder values with YOUR ACTUAL Firebase project details.
