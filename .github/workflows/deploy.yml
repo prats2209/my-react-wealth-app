@@ -27,7 +27,7 @@ jobs:
         run: npm run build
 
       - name: Run Unit Tests
-        run: npx vitest run
+        run: node ./node_modules/vitest/vitest.mjs run
 
       - name: Deploy to Firebase
         if: success()
