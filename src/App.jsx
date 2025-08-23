@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { LogIn, UserPlus, LogOut, CheckCircle, XCircle } from 'lucide-react';
+import { ReactComponent as LogInIcon } from './assets/login-icon.svg';
+import { ReactComponent as UserPlusIcon } from './assets/user-plus-icon.svg';
+import { ReactComponent as LogOutIcon } from './assets/logout-icon.svg';
+import { ReactComponent as CheckCircleIcon } from './assets/check-circle-icon.svg';
+import { ReactComponent as XCircleIcon } from './assets/x-circle-icon.svg';
 
 // --- YOUR FIREBASE CONFIGURATION GOES HERE ---
 // You MUST replace these placeholder values with YOUR ACTUAL Firebase project details.
@@ -22,11 +26,12 @@ const MessageBox = ({ message, type }) => {
     if (!message) return null;
     const bgColor = type === 'success' ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200';
     const textColor = type === 'success' ? 'text-green-700' : 'text-red-700';
-    const Icon = type === 'success' ? CheckCircle : XCircle;
+    // Use the imported SVG components
+    const Icon = type === 'success' ? CheckCircleIcon : XCircleIcon;
 
     return (
         <div id="messageBox" className={`mt-4 p-3 rounded-lg border flex items-center space-x-2 ${bgColor} ${textColor}`}>
-            <Icon size={20} />
+            <Icon className="w-5 h-5" /> {/* Use className to style SVGs */}
             <p className="text-sm font-medium">{message}</p>
         </div>
     );
@@ -303,7 +308,7 @@ const App = () => {
                                 onClick={handleLogin}
                                 className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-semibold hover:bg-blue-700 transition duration-200 flex items-center justify-center space-x-2 shadow-md hover:shadow-lg"
                             >
-                                <LogIn size={18} />
+                                <LogInIcon size={18} />
                                 <span>Log In</span>
                             </button>
                         </div>
@@ -357,7 +362,7 @@ const App = () => {
                                 onClick={handleRegister}
                                 className="w-full bg-green-600 text-white py-2.5 rounded-lg font-semibold hover:bg-green-700 transition duration-200 flex items-center justify-center space-x-2 shadow-md hover:shadow-lg"
                             >
-                                <UserPlus size={18} />
+                                <UserPlusIcon size={18} />
                                 <span>Register</span>
                             </button>
                         </div>
@@ -384,7 +389,7 @@ const App = () => {
                                     onClick={handleLogout}
                                     className="mt-4 bg-red-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-red-700 transition duration-200 flex items-center justify-center mx-auto space-x-2 shadow-md hover:shadow-lg"
                                 >
-                                    <LogOut size={18} />
+                                    <LogOutIcon size={18} />
                                     <span>Log Out</span>
                                 </button>
                             </div>
@@ -404,7 +409,7 @@ const App = () => {
                                 onClick={createDummyUser}
                                 className="bg-blue-600 text-white py-2.5 px-6 rounded-lg font-semibold hover:bg-blue-700 transition duration-200 flex items-center justify-center space-x-2 shadow-md hover:shadow-lg"
                             >
-                                <UserPlus size={18} />
+                                <UserPlusIcon size={18} />
                                 <span>Create Dummy User</span>
                             </button>
                         </div>
