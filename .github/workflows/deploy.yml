@@ -27,7 +27,9 @@ jobs:
         run: npm run build
 
       - name: Run Unit Tests
-        run: npx vitest run
+        # This command explicitly tells vitest where to find the test files,
+        # bypassing any configuration issues.
+        run: npx vitest run --include 'src/tests/**/*.test.jsx'
 
       - name: Deploy to Firebase
         if: success()
