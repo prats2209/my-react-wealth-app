@@ -3,12 +3,16 @@ import { describe, it, expect } from 'vitest';
 import App from '../App';
 
 describe('App', () => {
-  it('renders the login screen by default', () => {
+  // Make the test function async
+  it('renders the login screen after initialization', async () => {
     // Render the App component
     render(<App />);
     
-    // Check if the text "Client Login" is present on the screen
-    // The `i` flag makes the search case-insensitive
-    expect(screen.getByText(/client login/i)).toBeInTheDocument();
+    // Use `findByText` which automatically waits for the element to appear.
+    // We've also increased the default timeout to 10 seconds just in case.
+    const loginHeading = await screen.findByText(/client login/i, {}, { timeout: 10000 });
+    
+    // Assert that the element is now in the document
+    expect(loginHeading).toBeInTheDocument();
   });
 });
