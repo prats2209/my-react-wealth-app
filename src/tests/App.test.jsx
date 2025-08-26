@@ -1,24 +1,20 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
-import App from '../App';
+// Using a more explicit path to prevent resolution errors in CI
+import App from '/src/App.jsx';
 
 describe('App', () => {
-  // Make the test function async
   it('renders the login screen after initialization', async () => {
-    // Render the App component
     render(<App />);
     
-    // First, wait for the "Initializing" message to DISAPPEAR.
-    // This is a robust way to ensure the app has finished its async setup.
+    // Wait for the "Initializing" message to DISAPPEAR.
     await waitFor(() => {
       expect(screen.queryByText(/initializing application/i)).toBeNull();
-    }, { timeout: 15000 }); // Wait up to 15 seconds for initialization
+    }, { timeout: 15000 });
 
-    // NOW that loading is complete, we can safely look for the login heading.
-    // We use findByText which also waits, as a final safety measure.
+    // NOW that loading is complete, safely look for the login heading.
     const loginHeading = await screen.findByText(/client login/i);
     
-    // Assert that the element is now in the document
     expect(loginHeading).toBeInTheDocument();
   });
 });

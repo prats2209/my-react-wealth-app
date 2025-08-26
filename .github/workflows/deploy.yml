@@ -27,7 +27,8 @@ jobs:
         run: npm run build
 
       - name: Run Unit Tests
-        run: npx vitest run
+        # This command explicitly points to the config file, forcing it to be used.
+        run: npx vitest run --config ./vite.config.js
 
       - name: Deploy to Firebase
         if: success()
